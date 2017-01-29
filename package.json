@@ -1,0 +1,22 @@
+{
+  "name": "quirc.js",
+  "version": "1.0.0",
+  "description": "JS library is 61.3kb after gzipped and seems to be able to decode video frames fairly quickly (<20ms).",
+  "main": "build.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhathe/quirc.js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Rhathe/quirc.js/issues"
+  },
+  "homepage": "https://github.com/Rhathe/quirc.js#readme"
+}
