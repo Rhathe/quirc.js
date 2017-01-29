@@ -8,107 +8,24 @@
 	<h3>Found [<span style="font-size: 40px" id="display_data"></span>]</h3>
 	<script>
 
-	var qrDecoder;
-	var last = Date.now();
-	var DEBUG = 0;
-	var ECC = {
-		0: 'M',
-		1: 'L',
-		2: 'H',
-		3: 'Q'
-	};
+	var qrDecoder = QrDecoder();
 
-	var DATA = {
-		1: 'NUMERIC',
-		2: 'ALPHA',
-		3: 'BYTE',
-		4: 'KANJI'
-	};
-
-	function log() {
-		if (!DEBUG) return;
-		var now = Date.now();
-		var args = Array.prototype.slice.call(arguments);
-		args.unshift('+' + (now - last) + 'ms');
-		console.log.apply(console, args);
-		last = now;
+	function getFrame() {
+		requestAnimationFrame(getFrame);
+		qrDecoder.grabFrameAndDecode().then((res) => {
+			document.getElementById('display_data').innerHTML = res.result;
+			qrDecoder.drawDetectionOnCanvas.apply(qrDecoder, res.coordinates);
+		});
 	}
 
-	var data, image;
-	var ctx, width, height;
-
-	// start
-	var video = document.createElement('video');
-	video.autoplay = true;
-
-	navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-	var tw = 640 // 320 // 640 // 1280;
-	var th = 480 // 240 // 480 // 720
-
-	var hdConstraints = {
-		audio: false,
-		video: {
-			mandatory: {
-				maxWidth: tw,
-				maxHeight: th
-			}
-		}
-	};
-
-	if (navigator.getUserMedia) {
-		navigator.getUserMedia(hdConstraints, success, errorCallback);
-	} else {
-		errorCallback('');
-	}
-
-	function errorCallback(e) {
-		console.log("Can't access user media", e);
-	}
-
-	function success(stream) {
-		console.log('success', stream);
-		qrDecoder = QrDecoder();
-		video.src = window.URL.createObjectURL(stream);
-		video.onclick = function() { video.play(); };
-		video.play();
-
-		function getFrame() {
-			requestAnimationFrame(getFrame);
-
-			if (!video.videoWidth) return;
-
-			if (!image) {
-				width = video.videoWidth, height = video.videoHeight;
-				log('video', width, height, video);
-
-				var canvas = document.createElement('canvas');
-				canvas.width = width;
-				canvas.height = height;
-				canvas.style.transform = 'scale(-1, 1)';
-
-				ctx = canvas.getContext('2d');
-				document.body.appendChild(canvas);
-
-				log('start');
-				image = true;
-				return;
-			}
-			log('interval')
-			// console.time('a')
-			ctx.drawImage(video, 0, 0, width, height);
-			var imageData = ctx.getImageData(0,0, width, height);
-			qrDecoder.decode(imageData).then((res) => {
-				qrDecoder.drawDetectionOnCanvas.apply(qrDecoder, [ctx].concat(res.coordinates) );
-			});
-			// console.timeEnd('a')
-		}
-
+	qrDecoder.loaded.then(() => {
+		document.body.appendChild(qrDecoder.canvas);
 		getFrame();
-	}
+	});
+
 	</script>
 	<p style="font-size:12px;">
-		<a href="https://github.com/zz85/quirc.js">source code on github</a>
+		<a href="https://github.com/rhathe/quirc.js">source code on github</a>
 	</p>
 </body>
 </html>

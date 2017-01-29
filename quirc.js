@@ -24,14 +24,50 @@ var QrDecoder = function() {
 	var Module;
 
 	class _QrDecoder {
-		constructor() {
+		constructor(options = {}) {
+			this.options = options;
 			this.image = null;
 			this.limit = 20;
 			this.decodeQueue = [];
+
+			this.loaded = this.loadVideo().then(() => {
+				this.loadCanvas();
+			});
 		}
 
 		get Module() {
 			return Module;
+		}
+
+		loadVideo() {
+			if (this.options.video) {
+				this.video = this.options.video;
+				return Promise.resolve();
+			}
+
+			this.video = document.createElement('video');
+			return navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+				this.video.width = 600;
+				this.video.height = 400;
+				this.video.srcObject = stream;
+			});
+		}
+
+		loadCanvas() {
+			this.canvas = this.options.canvas || document.createElement('canvas');
+			this.canvas.width = this.video.width;
+			this.canvas.height = this.video.height;
+			//canvas.style.transform = 'scale(-1, 1)';
+		}
+
+		grabFrameAndDecode() {
+			const ctx = this.canvas.getContext('2d');
+			const w = this.canvas.width;
+			const h = this.canvas.height;
+
+			ctx.drawImage(this.video, 0, 0, w, h);
+			const imageData = ctx.getImageData(0, 0, w, h);
+			return this.decode(imageData);
 		}
 
 		setImage(w, h) {
@@ -39,7 +75,8 @@ var QrDecoder = function() {
 			return this.image;
 		}
 
-		drawDetectionOnCanvas(ctx, x0, y0, x1, y1, x2, y2, x3, y3) {
+		drawDetectionOnCanvas(x0, y0, x1, y1, x2, y2, x3, y3) {
+			const ctx = this.canvas.getContext('2d');
 			ctx.fillStyle = 'red';
 			ctx.strokeStyle = 'red';
 			ctx.beginPath();
@@ -51,8 +88,8 @@ var QrDecoder = function() {
 			ctx.stroke();
 
 			ctx.save();
-			ctx.translate(width, 0);
-			ctx.scale(-1, 1);
+			//ctx.translate(0, 0);
+			//ctx.scale(-1, 1);
 			ctx.restore();
 		}
 
