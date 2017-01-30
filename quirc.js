@@ -20,7 +20,7 @@ PERFORMANCE OF THIS SOFTWARE.
 */
 
 
-var QrDecoder = function() {
+var QrDecoder = function(options) {
 	var Module;
 
 	class _QrDecoder {
@@ -11027,5 +11027,5 @@ var QrDecoder = function() {
 	run()
 
 
-	return new _QrDecoder();
+	return new _QrDecoder(options);
 };
