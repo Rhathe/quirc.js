@@ -55,7 +55,15 @@ var QrDecoder = function(options) {
 				height: this.options.videoHeight
 			};
 
-			return navigator.mediaDevices.getUserMedia({video: constraints}).then((stream) => {
+			return navigator.mediaDevices.enumerateDevices().then(devices => {
+				devices.forEach(d => {
+					if (d.kind === 'videoinput' && d.label.includes('back')) {
+						constraints.deviceId = d.deviceId;
+					}
+				});
+			}).then(() => {
+				return navigator.mediaDevices.getUserMedia({video: constraints});
+			}).then((stream) => {
 				this.video.width = this.options.videoWidth;
 				this.video.height = this.options.videoHeight;
 				this.video.srcObject = stream;
@@ -247,7 +255,7 @@ var QrDecoder = function(options) {
 		}
 		if (typeof console !== "undefined") {
 			if (!Module["print"]) Module["print"] = function print(x) {
-				console.log(x)
+				if (window.DEBUG) console.log(x)
 			};
 			if (!Module["printErr"]) Module["printErr"] = function printErr(x) {
 				console.log(x)
