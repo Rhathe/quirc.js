@@ -7,6 +7,7 @@
     "test": "tests"
   },
   "scripts": {
+    "build": "EMSCRIPTEN=node_modules/emscripten node build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/Rhathe/quirc.js/issues"
   },
-  "homepage": "https://github.com/Rhathe/quirc.js#readme"
+  "homepage": "https://github.com/Rhathe/quirc.js#readme",
+  "dependencies": {
+    "emscripten": "git+https://github.com/kripken/emscripten.git"
+  }
 }

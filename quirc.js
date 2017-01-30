@@ -57,7 +57,6 @@ var QrDecoder = function() {
 			this.canvas = this.options.canvas || document.createElement('canvas');
 			this.canvas.width = this.video.width;
 			this.canvas.height = this.video.height;
-			//canvas.style.transform = 'scale(-1, 1)';
 		}
 
 		grabFrameAndDecode() {
@@ -88,8 +87,6 @@ var QrDecoder = function() {
 			ctx.stroke();
 
 			ctx.save();
-			//ctx.translate(0, 0);
-			//ctx.scale(-1, 1);
 			ctx.restore();
 		}
 
@@ -120,6 +117,7 @@ var QrDecoder = function() {
 			}, (err) => {
 				if (window.DEBUG) {
 					throw err;
+					return Promise.reject(err);
 				}
 			});
 		}
@@ -146,7 +144,7 @@ var QrDecoder = function() {
 				this.Module.HEAPU8[image + j] = 0.2989 * data[i + 0] + 0.5870 * data[i + 1] + 0.1140 * data[i + 2];
 			}
 
-			this.Module._xprocess(next);
+			this.Module._xprocess(next.resolve, next.reject);
 		}
 	};
 
@@ -8258,12 +8256,8 @@ var QrDecoder = function() {
 		}
 
 		// NOTE: Manually modified to pass next into _xprocess
-		function Cb(next) {
-			var replacedUa = function() {
-				ua.apply(null, arguments);
-				next.resolve(arguments);
-			}
-
+		function Cb(resolve, reject) {
+			var resolved = false;
 			var a = 0,
 				b = 0,
 				d = 0,
@@ -8307,8 +8301,10 @@ var QrDecoder = function() {
 				do {
 					db(c[1078] | 0, s, q);
 					h = Ra(q, r) | 0;
-					if (!h) replacedUa(1, s | 0, c[r >> 2] | 0, c[j >> 2] | 0, c[k >> 2] | 0, c[l >> 2] | 0, m | 0, c[n >> 2] | 0, c[q >> 2] | 0, c[o >> 2] | 0, c[p >> 2] | 0, c[b >> 2] | 0, c[d >> 2] | 0, c[e >> 2] | 0, c[f >> 2] | 0, c[g >> 2] | 0) | 0;
-					else {
+					if (!h) {
+						resolved = true;
+						resolve([1, s | 0, c[r >> 2] | 0, c[j >> 2] | 0, c[k >> 2] | 0, c[l >> 2] | 0, m | 0, c[n >> 2] | 0, c[q >> 2] | 0, c[o >> 2] | 0, c[p >> 2] | 0, c[b >> 2] | 0, c[d >> 2] | 0, c[e >> 2] | 0, c[f >> 2] | 0, c[g >> 2] | 0]) | 0;
+					} else {
 						c[t >> 2] = xb(h) | 0;
 						ta(4432, t | 0) | 0
 					}
@@ -8316,6 +8312,8 @@ var QrDecoder = function() {
 				} while ((s | 0) < (a | 0));
 			}
 			i = u;
+
+			if (!resolved) reject('Cb failed');
 			return
 		}
 
@@ -8329,9 +8327,9 @@ var QrDecoder = function() {
 		}
 
 		// NOTE: Manually modified to pass next into _xprocess
-		function Eb(next) {
+		function Eb(resolve, reject) {
 			Bb();
-			Cb(next);
+			Cb(resolve, reject);
 			Ab();
 			return c[1080] | 0
 		}
