@@ -25,7 +25,11 @@ var QrDecoder = function(options) {
 
 	class _QrDecoder {
 		constructor(options = {}) {
-			this.options = options;
+			this.options = Object.assign(options, {
+				videoWidth: 200,
+				videoHeight: 130
+			});
+
 			this.image = null;
 			this.limit = 20;
 			this.decodeQueue = [];
@@ -46,9 +50,14 @@ var QrDecoder = function(options) {
 			}
 
 			this.video = document.createElement('video');
-			return navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
-				this.video.width = 600;
-				this.video.height = 400;
+			const constraints = {
+				width: this.options.videoWidth,
+				height: this.options.videoHeight
+			};
+
+			return navigator.mediaDevices.getUserMedia({video: constraints}).then((stream) => {
+				this.video.width = this.options.videoWidth;
+				this.video.height = this.options.videoHeight;
 				this.video.srcObject = stream;
 			});
 		}
