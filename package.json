@@ -20,7 +20,7 @@
     "url": "https://github.com/Rhathe/quirc.js/issues"
   },
   "homepage": "https://github.com/Rhathe/quirc.js#readme",
-  "dependencies": {
+  "devDependencies": {
     "emscripten": "git+https://github.com/kripken/emscripten.git"
   }
 }
